@@ -1,0 +1,10 @@
+file(REMOVE_RECURSE
+  "gridtest-actual.png"
+  "kdtree_1_10-actual.kd"
+  "kdtree_2_2-actual.kd"
+  "kdtree_2_10-actual.kd"
+  "kdtree_2_20-actual.kd"
+  "kdtree_3_10-actual.kd"
+  "kdtree_3_14-actual.kd"
+  "kdtree_3_31-actual.kd"
+)
