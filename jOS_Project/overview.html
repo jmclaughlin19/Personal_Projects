@@ -1,0 +1,368 @@
+<!doctype html>
+<style>
+    a:link {
+        color: #f4eff0; 
+        background-color: transparent;
+    }
+    a:visited {
+        color: #f4eff0;
+        background-color: transparent;
+    }
+    th {
+        background-color: #1e5bdf;
+    }
+    tr:hover {background-color: #1e5bdf;}
+    #toc_container
+    {
+        border: 2px solid #aaa;
+        display: table;
+        font-size: 110%;
+    }
+
+    #toc_title
+    {
+        font-weight: bold;
+        text-align: center;
+        color:#f4eff0;
+    }
+
+    #toc_list
+    {
+        padding-right: 20px;
+    }
+    body
+    {
+        background-color: #1A1A1D;
+        color: #C5C6C7;
+    }
+</style>
+<title>jOS Technical Overview</title>
+<h2 id="top">Technical Overview</h2>
+<hr>
+<div id="toc_container">
+    <p id="toc_title">Contents</p>
+    <p>
+        <ul id="toc_list">
+            <li><a href="#cmd">Shell Commands</a></li>
+            <li><a href="#combkey">Combinational Keys</a></li>
+            <li><a href="#fsdir">File System Directory</a></li>
+            <li><a href="#linkage">Traps/Assembly Linkages</a></li>
+            <li><a href="#exception">Exception Handlers</a></li>
+            <li><a href="#int">Interrupt Handlers</a></li>
+            <li><a href="#dev">Supported Devices</a></li>
+            <li><a href="#memaddr">Memory Addressing</a></li>
+            <li><a href="#pmem">Physical Memory Layout</a></li>
+            <li><a href="#vmem">Virtual Memory Layout</a></li>
+            <li><a href="#fs">File System</a></li>
+            <li><a href="#fsabst">File System Abstraction</a></li>
+            <li><a href="#syscall">System Calls</a></li>
+            <li><a href="#proctrl">Process Control</a></li>
+            <li><a href="#multerm">Multiterminals</a></li>
+            <li><a href="#scheduler">Scheduler</a></li>
+            <li><a href="#gui">GUI</a></li>
+            <li><a href="#chip8">chip8</a></li>
+            <li><a href="#userprograms">UserPrograms</a></li>
+        </ul>
+    </p>
+</div>
+
+<h3 id="cmd">Minor functionalities implemented outside of class requirements:</h3>
+<p>
+    <b>Mouse Driver:</b> Allows for packets generated from moving and pressing the mouse to be recognized and responded to by the kernel. Works with text scrolling.<br>
+    <b>Command History:</b> Supports up and down arrow presses to move between 5 most recent commands. Implemented seperately on each terminal.<br>
+    <b>CTRL+C:</b> Support for terminating programs through CTRL+C.<br>
+    <b>Status Bar:</b> Displays terminal number, process number, and current executing program.<br>
+</p>
+
+
+<h3 id="cmd">Shell Commands</h3>
+<table border="2" cellpadding="5">
+    <tr>
+        <th bgcolor="#ccffff">Command</th>
+        <th bgcolor="#ccffff">Description</th>
+    </tr>
+    <tr>
+        <td>exit</td>
+        <td>Quit the current shell program.<br>Will try to restart if the last shell in the current terminal is terminated.</td>
+    </tr>
+     <tr>
+        <td>clear</td>
+        <td>Clears current terminal screen.</td>
+    </tr>
+    <tr>
+        <td>[Executable] [Arg]</td>
+        <td>Search and open the program in the current terminal.<br>Some programs may require arguments (see below).</td>
+    </tr>
+</table>
+<h3 id="fsdir">File System Directory</h3>
+<table border="2" cellpadding="5">
+    <tr>
+        <th bgcolor="#ccffff">File Name</th>
+        <th bgcolor="#ccffff">File Kind</th>
+        <th bgcolor="#ccffff">Description</th>
+    </tr>
+    <tr>
+        <td>.</td>
+        <td>Directory</td>
+        <td>Holds information and refers to the directory itself.</td>
+    </tr>
+   <tr>
+        <td>sigtest</td>
+        <td>Executable</td>
+        <td>Argument: 0 or any. Used to test signals.<br>Use arg 0 to generate a PF without handler installed.</td>
+    </tr> 
+    <tr>
+        <td>shell</td>
+        <td>Executable</td>
+        <td>Executes a new shell. The underlying program running in each terminal.</td>
+    </tr>
+    <tr>
+        <td>grep</td>
+        <td>Executable</td>
+        <td>Argument: a pattern. Prints lines that contain a match for the pattern.</td>
+    </tr>  
+    <tr>
+        <td>syserr</td>
+        <td>Executable</td>
+        <td>Used to test illegal user program arguments.</td>
+    </tr>  
+    <tr>
+        <td>rtc</td>
+        <td>Device</td>
+        <td>Gives user-level access to the real-time clock (RTC).</td>
+    </tr>  
+    <tr>
+        <td>fish</td>
+        <td>Executable</td>
+        <td>Used to test vidmap and RTC. Display a fish animation in the current terminal.</td>
+    </tr>  
+    <tr>
+        <td>counter</td>
+        <td>Executable</td>
+        <td>A numerical counter.</td>
+    </tr>  
+    <tr>
+        <td>pingpong</td>
+        <td>Executable</td>
+        <td>Used to test RTC. Infiniately print a ping-pong animation in the current terminal.</td>
+    </tr>  
+    <tr>
+        <td>cat</td>
+        <td>Executable</td>
+        <td>Argument: a file name. Open and read the content of a file/directory/device.</td>
+    </tr>  
+    <tr>
+        <td>frame0.txt</td>
+        <td>Regular File</td>
+        <td>The fist frame of fish animation.</td>
+    </tr>  
+    <tr>
+        <td>verylarge~.txt</td>
+        <td>Regular File</td>
+        <td>Used to test very long file name handling.</td>
+    </tr>  
+    <tr>
+        <td>ls</td>
+        <td>Executable</td>
+        <td>List the directory.</td>
+    </tr>  
+    <tr>
+        <td>testprint</td>
+        <td>Executable</td>
+        <td>Used to test the terminal driver.</td>
+    </tr>  
+    <tr>
+        <td>created.txt</td>
+        <td>Regular File</td>
+        <td>Author information left by ECE 391 staff.</td>
+    </tr>  
+    <tr>
+        <td>frame1.txt</td>
+        <td>Regular File</td>
+        <td>The second frame of fish animation.</td>
+    </tr>  
+    <tr>
+        <td>hello</td>
+        <td>Executable</td>
+        <td>Used to test the terminal driver (input buffer).</td>
+    </tr>  
+</table>
+<h3 id="linkage">Assembly Linkages</h3>
+<p>
+    Assembly linkage is implemented to connect interrupts, exceptions, and syscalls from the IDT into the desired handler.
+</p>
+<h3 id="exception">Exception Handlers</h3>
+<p>
+    Linkage pushes information and calls an unified exception handler.
+</p>
+<h3 id="int">Interrupt Handlers</h3>
+<p>
+    Linkage pushes information and calls an unified interrupt handler.<br>
+    The handler will dispatch to the corresponding drivers.<br>
+    The IRQ lines are managed by two i8259 PICs just like any other classic IBM-compatible PC.<br>
+</p>
+<h3 id="dev">Supported Devices</h3>
+<p>
+    Contains drivers for the standard keyboard, programmable interval timer (PIT), real-time clock (RTC), terminal, and mouse.<br>
+    The standard keyboard driver adds support for capital letter handling and combinational keys.<br>
+    The PIT driver is used to handle program scheduling.<br>
+    The RTC driver supports frenquency adjusting and is "virtualized". Each process has its own RTC instance (see below).<br>
+    The terminal driver is for standard input and output and works with keyboard driver. The input buffer is limited at 128-characters.<br>
+    The mouse driver implements a mouse cursor and handles mouse packets. The mouse is usable in the GUI.<br>
+</p>
+<h3 id="memaddr">Memory Addressing</h3>
+<p>
+    jOS bypasses segmentation by fixing each segment to correspond to the entire addresses space. Paging is used to implement virtual memory.<br>
+    The memory layout is fixed (see below).<br>
+</p>
+<h3 id="pmem">Physical Memory Layout</h3>
+<p>
+    From low to high, 32MB of physical memory is utilized:<br>
+    <ul>
+        <li>0 - 4MB: 4kB pages containing relevant video memory.</li>
+        <li>4MB - 8MB: 4MB page for all kernel data including PCBs and program stacks.</li>
+        <li>8MB - 32MB: 4MB pages for user programs.</li>
+    </ul>
+</p>
+<h3 id="vmem">Virtual Memory Layout</h3>
+<p>
+    From low to high, the following in the 4GB virtual memory space is utilized:<br>
+    <ul>
+        <li>4MB PT with several 4KB global superviser pages for the VRAM</li>
+        <li>4MB global superviser page for the kernel</li>
+        <li>4MB user page at 128MB for the current scheduled process</li>
+        <li>4KB user page for the vidmap</li>
+    </ul>
+</p>
+<h3 id="fs">File System</h3>
+<p>
+    The File System has a total size of 8MB, and is divided into 4KB blocks of one boot block, inodes, and data blocks.<br>
+    Each boot block can track up to 62 inodes and one root directory, and each inode can track up to 1023 data blocks.<br>
+    The limitations are up to 62 files of 4092KB size and 32 characters name length. Also, it generally does not support hierarchy and is read-only.<br>
+    We have exteneded its implementation through the use of the VIM user program along with create and remove syscalls to allow the system to be writable. 
+    <img src="Image 5-7-23 at 10.51 AM.jpg" alt="Filesystem" style="width:250px;height:120px;">
+</p>
+<h3 id="fsabst">File System Abstraction</h3>
+<p>
+    The OS treats any files, device (RTC), and directory as files. Each process has a dynamic file descriptor array (FD) that supports 8 open files.<br>
+    According to the file type, each entry tracks inode, position, flags, and an operation jump table, and is utilized by syscalls (see below).<br>
+</p>
+<h3 id="syscall">System Calls</h3>
+<table border="2" cellpadding="5">
+    <tr>
+        <th bgcolor="#ccffff">System Call</th>
+        <th bgcolor="#ccffff">Description</th>
+    </tr>
+    <tr>
+        <td>halt</td>
+        <td>Halt the current program.</td>
+    </tr>
+   <tr>
+        <td>execute</td>
+        <td>Load and execute a new program.</td>
+    </tr> 
+    <tr>
+        <td>read</td>
+        <td>Read data from a opened file (see file system abstraction above).</td>
+    </tr>
+    <tr>
+        <td>write</td>
+        <td>Write data to a file (support terminal and device/RTC only).</td>
+    </tr>  
+    <tr>
+        <td>open</td>
+        <td>Allocate FD entry and open a file.</td>
+    </tr>  
+    <tr>
+        <td>close</td>
+        <td>Close the FD entry and close a file.</td>
+    </tr>  
+    <tr>
+        <td>getargs</td>
+        <td>Read the command line argument from shell.</td>
+    </tr>  
+    <tr>
+        <td>vidmap</td>
+        <td>Giving user-level access to the VRAM and map it to the user space.</td>
+    </tr>  
+    <tr>
+        <td><i>set_handler</i></td>
+        <td><i>Set custom handler for signal.</i></td>
+    </tr>  
+    <tr>
+        <td><i>sigreturn</i></td>
+        <td><i>Restore the hardware context from signal handler.</i></td>
+    </tr>  
+</table>
+<p>
+    <i>Please note that the last two system calls are not implimented as signals are not present.</i>
+</p>
+<h3 id="syscall">Extended System Calls</h3>
+<table border="2" cellpadding="5">
+    <tr>
+        <th bgcolor="#ccffff">System Call</th>
+        <th bgcolor="#ccffff">Description</th>
+    </tr>
+    <tr>
+        <td>create</td>
+        <td>Used to insert or remove a file from the filesystem.</td>
+    </tr>
+    <tr>
+        <td>theme</td>
+        <td>Used by the theme user program to modifiy the attribute colors of each terminal to set themes.</td>
+    </tr>
+    <tr>
+        <td>screen</td>
+        <td>Used by various user programs to manage paging and screen saving.</td>
+    </tr>
+    <tr>
+        <td>edit_scroll</td>
+        <td>Used by various user programs to enable or disable scrolling.</td>
+    </tr>
+    <tr>
+        <td>retrieve_key</td>
+        <td>Syscall used by GUI and chip8 user programs to fetch current keyboard input.</td>
+    </tr>
+    <tr>
+        <td>retrieve_mouse</td>
+        <td>Syscall used by GUI to access mouse data.</td>
+    </tr>
+    <tr>
+        <td>update_attrib</td>
+        <td>Syscall used to modify the color for themes.</td>
+    </tr>
+</table>
+<h3 id="proctrl">Process Control</h3>
+<p>
+    Supports up to 6 processes. Each process holds a process control block (PCB) in the kernel.<br>
+    The kernel manages the PCB allocation by a custom design called <i>PCB_t</i>.<br>
+    Each PCB tracks the allocated process ID (PID), parent PID, terminal ID, kernel/user stacks, FD, etc.<br>
+</p>
+<h3 id="multerm">Multiterminals</h3>
+<p>
+    Supports up to 3 terminals. Each terminal is independent of the others.<br>
+</p>
+<h3 id="scheduler">Scheduler</h3>
+<p>
+    Supports a round-robin scheduler through sequential PIT interrupts.<br>
+    The scheduler schedules 3 processes that is shown on each terminal, called active processes, so they can multitask.<br>
+    But only one process is "actually" running, called running process.<br>
+</p>
+<h3 id="gui">GUI</h3>
+<p>
+    Supports arrow keys or mouse for navigation. Click or press enter to select a program.<br>
+    Some programs may require arguments. If this is the case, you must enter the arguments once the program is selected.<br>
+</p>
+<h3 id="chip8">Chip8 Modified Emulator</h3>
+<p>
+    Enter "chip8 |rom|"" to run the emulator. Avaialable roms: test, breakout, invaders, tetris, ibm.<br>
+    Chip8 is a modified instruction set which many retro games have been ported to. In this OS, we have<br>
+    made use of publicly available roms and simply created a program to translate their instructions.
+</p>
+<h3 id="userprograms">User Programs</h3>
+<p>
+    jOS implements several user programs. Run "help" to see a list of these programs.<br>
+    Notable programs include: vim, rm, matrix, and theme. 
+</p>
+<hr>
+<b><a href="#top">Back to Top</a></b>
