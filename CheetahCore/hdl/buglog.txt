@@ -1,0 +1,35 @@
+so the master spiker does not miss too much
+
+Total Bug Score: 8.5/7.5
+under : mereditu
+over  : jay cub
+
+TOTAL BUG SCORE NEW LINE 11.5
+under : mereditu
+over  : jummpy, jay cub
+
+BUG LOG: 
+1) alu_unit_data.m2_sel instead of br 
+SCORE = 0.5 bugs
+2) since inst was invalid, inst to be discarded was not dequeued causing error
+SCORE = 1 bug
+2b) fixed and failed lint :( but then realized that discard was same as jump_commit_reg && ufp_resp huge so used that bang bang
+3) In execute, branches without br_en were not being marked as valid
+SCORE = 1 bug
+4) Needed to map rd 0 to pd 0 with value 0, prevent writes, and never add 0 to freelist
+SCORE = 1 bug
+5) Zeros appear in freelist because of size issues, enqueue issues, many issues, bigxthaplug aye
+SCORE = 1 bug
+6) Valid_in is high for too many cycles on mem inst
+SCORE = 1 bug
+7) Freelist not handling dequeue and jump commit simultaneously
+SCORE = 1 bug
+8) 11, 11, 11, 11, 11
+SCORE = 0.0 bug (trickster bug)
+9) Freelist stupid but secretly was rename dispatch fault losing rd/pd mapping sent to rat when jump_commit was high
+SCORE = 1 bug
+10) When jump commit and outgoing dmem request, were not flushing request
+SCORE = 1 bug
+
+
+

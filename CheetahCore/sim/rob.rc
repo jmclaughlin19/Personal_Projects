@@ -1,0 +1,63 @@
+Magic 271485
+Revision Verdi_R-2020.12-SP1-1
+
+; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
+viewPort 0 25 1920 443 176 94
+
+; File list:
+; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
+openDirFile -d / "" "/home/mnaylor2/ece411/fa24_ece411_Team_Joe/mp_ooo/sim/vcs/dump.fsdb"
+
+; file time scale:
+; fileTimeScale ### s|ms|us|ns|ps
+
+; signal spacing:
+signalSpacing 5
+
+; windowTimeUnit is used for zoom, cursor & marker
+; waveform viewport range
+zoom 789785.878378 1217520.878378
+cursor 1085000.000000
+marker 0.000000
+
+; user define markers
+; userMarker time_pos marker_name color linestyle
+; visible top row signal index
+top 0
+; marker line index
+markerPos 9
+
+; event list
+; addEvent event_name event_expression
+; curEvent event_name
+
+
+
+COMPLEX_EVENT_BEGIN
+
+
+COMPLEX_EVENT_END
+
+
+
+; toolbar current search type
+; curSTATUS search_type
+curSTATUS ByChange
+
+
+addGroup "G1"
+activeDirFile "" "/home/mnaylor2/ece411/fa24_ece411_Team_Joe/mp_ooo/sim/vcs/dump.fsdb"
+addSignal -h 15 /top_tb/dut/free_list_inst/free_list_size[31:0]
+addSignal -h 15 -holdScope jump_commit
+addSignal -h 15 -holdScope rob_pd_count[31:0]
+addSignal -h 15 -holdScope enqueue
+addGroup "G2"
+addSignal -h 15 /top_tb/dut/rrf_inst/jump_commit
+addSignal -h 15 -holdScope rob_data_out[11:0]
+addSignal -h 15 -holdScope rob_data_out_valid
+addSignal -h 15 /top_tb/dut/rob_inst/rob_size[31:0]
+addGroup "G3"
+
+; getSignalForm Scope Hierarchy Status
+; active file of getSignalForm
+
